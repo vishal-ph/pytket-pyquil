@@ -26,6 +26,11 @@ jobs:
       with:
         fetch-depth: '0'
     - run: git fetch --depth=1 origin +refs/tags/*:refs/tags/* +refs/heads/*:refs/remotes/origin/*
+    - name: Pull docker images
+      if: ${{ matrix.os == 'ubuntu-20.04' }}
+      run: |
+        docker pull rigetti/quilc
+        docker pull rigetti/qvm    
     - name: Set up Python 3.8
       if: github.event_name == 'push'
       uses: actions/setup-python@v3
