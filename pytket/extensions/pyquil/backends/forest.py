@@ -109,7 +109,7 @@ class ForestBackend(Backend):
     _supports_contextual_optimisation = True
     _persistent_handles = True
     _GATE_SET = {OpType.CZ, OpType.Rx, OpType.Rz, OpType.Measure, OpType.Barrier,
-                 OpType.CRz, OpType.PhasedISWAP}
+                 OpType.CU1, OpType.PhasedISWAP}
 
     def __init__(self, qc: QuantumComputer):
         """Backend for running circuits with the Rigetti QVM.
