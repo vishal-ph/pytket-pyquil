@@ -54,6 +54,7 @@ from pytket.passes import (  # type: ignore
     FlattenRegisters,
     SimplifyInitial,
     NaivePlacementPass,
+    RebaseCustom
 )
 from pytket.pauli import QubitPauliString  # type: ignore
 from pytket.predicates import (  # type: ignore
@@ -110,7 +111,7 @@ class ForestBackend(Backend):
     _persistent_handles = True
     _GATE_SET = {OpType.CZ, OpType.Rx, OpType.Rz, OpType.Measure, OpType.Barrier}
 
-    def __init__(self, qc: QuantumComputer):
+    def __init__(self, qc: QuantumComputer, custom_rebase:bool=True):
         """Backend for running circuits with the Rigetti QVM.
 
         :param qc: The particular QuantumComputer to use. See the pyQuil docs for more
@@ -120,6 +121,8 @@ class ForestBackend(Backend):
         super().__init__()
         self._qc: QuantumComputer = qc
         self._backend_info = self._get_backend_info(self._qc)
+        self.custom_gateset = {OpType.CZ, OpType.Rx, OpType.Rz, OpType.Measure, OpType.Barrier,
+                               OpType.CU1, OpType.PhasedISWAP} if custom_rebase is True else None
 
     @property
     def required_predicates(self) -> List[Predicate]:
@@ -161,7 +164,11 @@ class ForestBackend(Backend):
             passlist.append(CliffordSimp(False))
         if optimisation_level > 0:
             passlist.append(SynthesiseTket())
-        passlist.append(self.rebase_pass())
+        if self.custom_gateset is not None:
+            rebase_pass = RebaseCustom(self.custom_gateset)
+            passlist.append(RebaseCustom)
+        else:
+            passlist.append(self.rebase_pass())
         if optimisation_level > 0:
             passlist.extend(
                 [
