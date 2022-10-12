@@ -133,7 +133,8 @@ class ForestBackend(Backend):
         ]
 
     def rebase_pass(self) -> BasePass:
-        return auto_rebase_pass({OpType.CZ, OpType.Rz, OpType.Rx})
+        return auto_rebase_pass({OpType.CZ, OpType.Rz, OpType.Rx,
+                                 OpType.CU1, OpType.PhasedISWAP})
 
     def default_compilation_pass(self, optimisation_level: int = 1) -> BasePass:
         assert optimisation_level in range(3)
