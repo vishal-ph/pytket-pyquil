@@ -169,7 +169,7 @@ class ForestBackend(Backend):
             cx_in_cu1 = Circuit(2)
             cx_in_cu1.H(1).add_gate(OpType.CU1,1,[0,1]).H(1)
             rebase_pass = RebaseCustom(self.custom_gateset, cx_in_cu1, get_TK1_decomposition_function(self.custom_gateset))
-            passlist.append(RebaseCustom)
+            passlist.append(rebase_pass)
         else:
             passlist.append(self.rebase_pass())
         if optimisation_level > 0:
