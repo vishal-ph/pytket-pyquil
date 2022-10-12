@@ -327,7 +327,8 @@ def process_characterisation(qc: QuantumComputer) -> dict:
             "ANY": OpType.Rz,
         },
     }
-    str_to_gate_2qb = {"CZ": OpType.CZ, "XY": OpType.ISWAP}
+    str_to_gate_2qb = {"CZ": OpType.CZ, "XY": OpType.ISWAP,
+                       "CPHASE": OpType.CU1}
 
     link_errors: Dict[Tuple[Node, Node], Dict[OpType, float]] = defaultdict(dict)
     node_errors: Dict[Node, Dict[OpType, float]] = defaultdict(dict)
