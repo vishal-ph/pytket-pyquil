@@ -56,6 +56,7 @@ from pytket.passes import (  # type: ignore
     NaivePlacementPass,
     RebaseCustom
 )
+from pytket.passes.auto_rebase import get_TK1_decomposition_function
 from pytket.pauli import QubitPauliString  # type: ignore
 from pytket.predicates import (  # type: ignore
     NoSymbolsPredicate,
@@ -165,7 +166,9 @@ class ForestBackend(Backend):
         if optimisation_level > 0:
             passlist.append(SynthesiseTket())
         if self.custom_gateset is not None:
-            rebase_pass = RebaseCustom(self.custom_gateset)
+            cx_in_cu1 = Circuit(2)
+            cx_in_cu1.H(1).add_gate(OpType.CU1,1,[0,1]).H(1)
+            rebase_pass = RebaseCustom(self.custom_gateset, cx_in_cu1, get_TK1_decomposition_function(self.custom_gateset))
             passlist.append(RebaseCustom)
         else:
             passlist.append(self.rebase_pass())
