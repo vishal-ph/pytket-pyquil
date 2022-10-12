@@ -111,7 +111,7 @@ class ForestBackend(Backend):
     _GATE_SET = {OpType.CZ, OpType.Rx, OpType.Rz, OpType.Measure, OpType.Barrier,
                  OpType.CU1, OpType.PhasedISWAP}
 
-    def __init__(self, qc: QuantumComputer):
+    def __init__(self, qc: QuantumComputer, perform_rebase:bool = True):
         """Backend for running circuits with the Rigetti QVM.
 
         :param qc: The particular QuantumComputer to use. See the pyQuil docs for more
@@ -120,6 +120,7 @@ class ForestBackend(Backend):
         """
         super().__init__()
         self._qc: QuantumComputer = qc
+        self.perform_rebase = perform_rebase
         self._backend_info = self._get_backend_info(self._qc)
 
     @property
@@ -133,8 +134,7 @@ class ForestBackend(Backend):
         ]
 
     def rebase_pass(self) -> BasePass:
-        return auto_rebase_pass({OpType.CZ, OpType.Rz, OpType.Rx,
-                                 OpType.CU1, OpType.PhasedISWAP})
+        return auto_rebase_pass({OpType.CZ, OpType.Rz, OpType.Rx})
 
     def default_compilation_pass(self, optimisation_level: int = 1) -> BasePass:
         assert optimisation_level in range(3)
@@ -163,7 +163,8 @@ class ForestBackend(Backend):
             passlist.append(CliffordSimp(False))
         if optimisation_level > 0:
             passlist.append(SynthesiseTket())
-        passlist.append(self.rebase_pass())
+        if self.perform_rebase == True:
+            passlist.append(self.rebase_pass())
         if optimisation_level > 0:
             passlist.extend(
                 [
